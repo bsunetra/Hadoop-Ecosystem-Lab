@@ -1,0 +1,280 @@
+HADOOP ECOSYSTEM LAB
+EXPERIMENT 1 – SINGLE-NODE HADOOP SETUP
+========================================
+
+1. INSTALL JAVA
+---------------
+
+sudo apt update
+sudo apt install openjdk-11-jdk -y
+java -version
+
+
+2. CREATE HADOOP USER
+---------------------
+
+sudo adduser hadoop
+sudo usermod -aG sudo hadoop
+su - hadoop
+
+
+3. INSTALL OPENSSH
+------------------
+
+sudo apt install openssh-server openssh-client -y
+
+
+4. GENERATE SSH KEYS
+--------------------
+
+ssh-keygen -t rsa
+
+Press Enter for the default file location.
+Press Enter when asked for the passphrase.
+Press Enter again to confirm.
+
+
+5. CONFIGURE PASSWORDLESS SSH
+-----------------------------
+
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/id_rsa
+chmod 644 ~/.ssh/id_rsa.pub
+
+Test SSH:
+
+ssh localhost
+
+
+6. DOWNLOAD HADOOP
+------------------
+
+wget https://downloads.apache.org/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz
+
+tar -xzf hadoop-3.3.6.tar.gz
+
+mv hadoop-3.3.6 ~/hadoop
+
+
+7. SET ENVIRONMENT VARIABLES
+----------------------------
+
+nano ~/.bashrc
+
+Add:
+
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+export HADOOP_HOME=$HOME/hadoop
+export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+
+Apply changes:
+
+source ~/.bashrc
+
+Verify:
+
+echo $JAVA_HOME
+java -version
+
+
+8. CONFIGURE hadoop-env.sh
+--------------------------
+
+nano $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+
+Add:
+
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+
+
+9. CONFIGURE core-site.xml
+--------------------------
+
+$HADOOP_HOME/etc/hadoop/core-site.xml
+
+Configuration:
+
+<configuration>
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://localhost:9000</value>
+    </property>
+</configuration>
+
+
+10. CONFIGURE hdfs-site.xml
+---------------------------
+
+$HADOOP_HOME/etc/hadoop/hdfs-site.xml
+
+Configuration:
+
+<configuration>
+    <property>
+        <name>dfs.replication</name>
+        <value>1</value>
+    </property>
+
+    <property>
+        <name>dfs.namenode.name.dir</name>
+        <value>file:///home/hadoop/hdfs/namenode</value>
+    </property>
+
+    <property>
+        <name>dfs.datanode.data.dir</name>
+        <value>file:///home/hadoop/hdfs/datanode</value>
+    </property>
+</configuration>
+
+
+11. CONFIGURE mapred-site.xml
+-----------------------------
+
+$HADOOP_HOME/etc/hadoop/mapred-site.xml
+
+Configuration:
+
+<configuration>
+    <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+    </property>
+</configuration>
+
+
+12. CONFIGURE yarn-site.xml
+---------------------------
+
+$HADOOP_HOME/etc/hadoop/yarn-site.xml
+
+Configuration:
+
+<configuration>
+    <property>
+        <name>yarn.nodemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
+    </property>
+</configuration>
+
+
+13. CREATE HDFS STORAGE DIRECTORIES
+-----------------------------------
+
+mkdir -p /home/hadoop/hdfs/namenode
+mkdir -p /home/hadoop/hdfs/datanode
+
+sudo chown -R hadoop:hadoop /home/hadoop/hdfs
+
+
+14. VERIFY HDFS CONFIGURATION
+-----------------------------
+
+hdfs getconf -confKey fs.defaultFS
+
+Expected output:
+
+hdfs://localhost:9000
+
+
+15. FORMAT NAMENODE
+-------------------
+
+hdfs namenode -format
+
+
+16. START HDFS
+--------------
+
+start-dfs.sh
+
+Verify:
+
+jps
+
+Expected:
+
+NameNode
+DataNode
+SecondaryNameNode
+
+
+17. START YARN
+--------------
+
+start-yarn.sh
+
+Verify:
+
+jps
+
+Expected:
+
+NameNode
+DataNode
+SecondaryNameNode
+ResourceManager
+NodeManager
+
+
+18. TEST HDFS
+-------------
+
+Create HDFS directory:
+
+hdfs dfs -mkdir /input
+
+List HDFS root:
+
+hdfs dfs -ls /
+
+Create a local file:
+
+echo "Hadoop is a big data framework" > sample.txt
+
+Upload the file to HDFS:
+
+hdfs dfs -put sample.txt /input
+
+Verify:
+
+hdfs dfs -ls /input
+
+
+19. RUN MAPREDUCE WORDCOUNT
+---------------------------
+
+hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar wordcount /input /output
+
+View output:
+
+hdfs dfs -cat /output/part-r-00000
+
+
+20. FINAL VERIFICATION
+----------------------
+
+jps
+
+Expected:
+
+NameNode
+DataNode
+SecondaryNameNode
+ResourceManager
+NodeManager
+
+RESULT
+------
+
+The single-node Hadoop cluster was successfully configured.
+
+Java installed.
+Passwordless SSH configured.
+HDFS configured.
+YARN configured.
+Hadoop daemons started.
+HDFS file upload tested.
+MapReduce WordCount executed.
