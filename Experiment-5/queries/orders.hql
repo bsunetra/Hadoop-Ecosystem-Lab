@@ -13,7 +13,7 @@ FIELDS TERMINATED BY ','
 STORED AS TEXTFILE;
 
 -- Load orders dataset
-LOAD DATA LOCAL INPATH '/path/orders.csv'
+LOAD DATA LOCAL INPATH 'input/orders.csv'
 INTO TABLE orders;
 
 -- Display all orders
