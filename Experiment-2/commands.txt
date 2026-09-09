@@ -1,0 +1,178 @@
+============================================================
+EXPERIMENT 2 – MONGODB ON WSL
+COMMANDS USED
+============================================================
+
+1. INSTALL / SET UP WSL
+------------------------------------------------------------
+wsl --install Ubuntu-22.04
+
+
+2. UPDATE UBUNTU
+------------------------------------------------------------
+sudo apt-get update
+
+
+3. INSTALL PREREQUISITES
+------------------------------------------------------------
+sudo apt-get install -y gnupg curl
+
+
+4. IMPORT MONGODB GPG KEY
+------------------------------------------------------------
+curl -fsSL https://pgp.mongodb.com/server-7.0.asc | \
+sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg \
+--dearmor
+
+
+5. ADD MONGODB REPOSITORY
+------------------------------------------------------------
+echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] \
+https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | \
+sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+
+
+6. UPDATE PACKAGE LIST
+------------------------------------------------------------
+sudo apt-get update
+
+
+7. INSTALL MONGODB
+------------------------------------------------------------
+sudo apt-get install -y mongodb-org
+
+
+8. START MONGODB SERVICE
+------------------------------------------------------------
+sudo systemctl start mongod
+
+
+9. CHECK MONGODB SERVICE STATUS
+------------------------------------------------------------
+sudo systemctl status mongod
+
+
+10. OPEN MONGODB SHELL
+------------------------------------------------------------
+mongosh
+
+
+11. SELECT / CREATE DATABASE
+------------------------------------------------------------
+use CollegeDB
+
+
+12. CREATE COLLECTION
+------------------------------------------------------------
+db.createCollection("students")
+
+
+13. INSERT ONE DOCUMENT
+------------------------------------------------------------
+db.students.insertOne({
+    studentId: 101,
+    name: "John",
+    department: "CSE",
+    subjects: ["BigData", "AI", "ML"],
+    address: {
+        city: "Chennai"
+    }
+})
+
+
+14. READ ALL DOCUMENTS
+------------------------------------------------------------
+db.students.find()
+
+
+15. READ ONE DOCUMENT
+------------------------------------------------------------
+db.students.findOne({ studentId: 103 })
+
+
+16. INSERT MULTIPLE DOCUMENTS
+------------------------------------------------------------
+db.students.insertMany([
+    {
+        studentId: 102,
+        name: "Priya",
+        department: "AIDS",
+        cgpa: 8.7,
+        year: 3
+    },
+    {
+        studentId: 103,
+        name: "Rahul",
+        department: "CSE",
+        cgpa: 9.1,
+        year: 3,
+        address: {
+            city: "Chennai"
+        }
+    },
+    {
+        studentId: 104,
+        name: "Anu",
+        department: "ECE",
+        cgpa: 8.2,
+        year: 2
+    }
+])
+
+
+17. FILTER BY DEPARTMENT
+------------------------------------------------------------
+db.students.find({ department: "AIDS" }).pretty()
+
+
+18. FILTER USING GREATER-THAN OPERATOR
+------------------------------------------------------------
+db.students.find({ cgpa: { $gt: 8.5 } }).pretty()
+
+
+19. FILTER NESTED DOCUMENT
+------------------------------------------------------------
+db.students.find({
+    "address.city": "Chennai"
+}).pretty()
+
+
+20. UPDATE A DOCUMENT
+------------------------------------------------------------
+db.students.updateOne(
+    { studentId: 101 },
+    { $set: { cgpa: 9.0 } }
+)
+
+
+21. REMOVE A FIELD
+------------------------------------------------------------
+db.students.updateOne(
+    { studentId: 101 },
+    { $unset: { email: "" } }
+)
+
+
+22. DELETE A DOCUMENT
+------------------------------------------------------------
+db.students.deleteOne({ studentId: 104 })
+
+
+23. COUNT DOCUMENTS
+------------------------------------------------------------
+db.students.countDocuments()
+
+
+24. DISPLAY DATABASES
+------------------------------------------------------------
+show dbs
+
+
+25. DISPLAY COLLECTIONS
+------------------------------------------------------------
+show collections
+
+
+============================================================
+END OF EXPERIMENT 2
+============================================================
