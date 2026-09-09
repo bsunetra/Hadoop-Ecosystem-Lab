@@ -1,0 +1,199 @@
+============================================================
+EXPERIMENT 3 – HADOOP MAPREDUCE WORDCOUNT
+COMMANDS USED
+============================================================
+
+
+========================
+PART 1 – LOCAL MODE
+========================
+
+1. UPDATE UBUNTU
+------------------------------------------------------------
+sudo apt update
+
+
+2. INSTALL JAVA AND REQUIRED PACKAGES
+------------------------------------------------------------
+sudo apt install -y openjdk-17-jdk ssh pdsh wget
+
+
+3. DOWNLOAD HADOOP 3.3.6
+------------------------------------------------------------
+wget https://downloads.apache.org/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz
+
+
+4. EXTRACT HADOOP
+------------------------------------------------------------
+tar -xzf hadoop-3.3.6.tar.gz
+
+
+5. RENAME HADOOP DIRECTORY
+------------------------------------------------------------
+mv hadoop-3.3.6 hadoop
+
+
+6. SET ENVIRONMENT VARIABLES
+------------------------------------------------------------
+nano ~/.bashrc
+
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+export HADOOP_HOME=$HOME/hadoop
+export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_HDFS_HOME=$HADOOP_HOME
+export YARN_HOME=$HADOOP_HOME
+
+
+7. APPLY ENVIRONMENT VARIABLES
+------------------------------------------------------------
+source ~/.bashrc
+
+
+8. CREATE SOURCE DIRECTORY
+------------------------------------------------------------
+mkdir -p src
+
+
+9. CREATE WORDCOUNT JAVA FILE
+------------------------------------------------------------
+nano src/WordCount.java
+
+
+10. CREATE INPUT FILE
+------------------------------------------------------------
+nano input.txt
+
+
+11. CREATE COMPILED CLASSES DIRECTORY
+------------------------------------------------------------
+mkdir -p classes
+
+
+12. COMPILE WORDCOUNT PROGRAM
+------------------------------------------------------------
+javac -classpath $(hadoop classpath) -d classes src/WordCount.java
+
+
+13. CREATE JAR FILE
+------------------------------------------------------------
+jar -cvf wordcount.jar -C classes/ .
+
+
+14. RUN WORDCOUNT IN LOCAL MODE
+------------------------------------------------------------
+hadoop jar wordcount.jar WordCount input.txt output
+
+
+15. VIEW LOCAL MODE OUTPUT
+------------------------------------------------------------
+cat output/part-r-00000
+
+
+
+========================
+PART 2 – PSEUDO-DISTRIBUTED MODE
+========================
+
+
+16. CONFIGURE CORE-SITE.XML
+------------------------------------------------------------
+nano $HADOOP_HOME/etc/hadoop/core-site.xml
+
+
+17. CONFIGURE HDFS-SITE.XML
+------------------------------------------------------------
+nano $HADOOP_HOME/etc/hadoop/hdfs-site.xml
+
+
+18. CONFIGURE MAPRED-SITE.XML
+------------------------------------------------------------
+nano $HADOOP_HOME/etc/hadoop/mapred-site.xml
+
+
+19. CONFIGURE YARN-SITE.XML
+------------------------------------------------------------
+nano $HADOOP_HOME/etc/hadoop/yarn-site.xml
+
+
+20. FORMAT NAMENODE
+------------------------------------------------------------
+hdfs namenode -format
+
+
+21. START HDFS
+------------------------------------------------------------
+start-dfs.sh
+
+
+22. START YARN
+------------------------------------------------------------
+start-yarn.sh
+
+
+23. CHECK RUNNING HADOOP PROCESSES
+------------------------------------------------------------
+jps
+
+
+Expected processes:
+
+NameNode
+DataNode
+SecondaryNameNode
+ResourceManager
+NodeManager
+
+
+24. CREATE HDFS INPUT DIRECTORY
+------------------------------------------------------------
+hdfs dfs -mkdir -p /user/$USER/input
+
+
+25. UPLOAD INPUT FILE TO HDFS
+------------------------------------------------------------
+hdfs dfs -put input.txt /user/$USER/input
+
+
+26. VERIFY INPUT FILE IN HDFS
+------------------------------------------------------------
+hdfs dfs -ls /user/$USER/input
+
+
+27. SUBMIT WORDCOUNT JOB TO YARN
+------------------------------------------------------------
+hadoop jar wordcount.jar WordCount \
+/user/$USER/input \
+/user/$USER/output
+
+
+28. VIEW WORDCOUNT OUTPUT FROM HDFS
+------------------------------------------------------------
+hdfs dfs -cat /user/$USER/output/part-r-00000
+
+
+29. CHECK HDFS FILESYSTEM
+------------------------------------------------------------
+hdfs dfs -ls /user/$USER/output
+
+
+30. CHECK HDFS FILESYSTEM DETAILS
+------------------------------------------------------------
+hdfs fsck /user/$USER/input
+
+
+============================================================
+WEB INTERFACES
+============================================================
+
+NameNode UI:
+http://localhost:9870
+
+ResourceManager UI:
+http://localhost:8088
+
+
+============================================================
+END OF EXPERIMENT 3
+============================================================
