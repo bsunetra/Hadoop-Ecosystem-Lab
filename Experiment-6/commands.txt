@@ -1,0 +1,92 @@
+============================================================
+EXPERIMENT 6 – PIG ORDERS DATA ANALYSIS
+COMMANDS USED
+============================================================
+
+1. START PIG
+pig
+
+2. LOAD ORDERS DATASET
+orders = LOAD 'input/orders.csv'
+USING PigStorage(',')
+AS (
+    order_id:int,
+    customer_id:int,
+    order_date:chararray,
+    product_id:int,
+    order_total:double
+);
+
+3. DISPLAY ORDERS
+DUMP orders;
+
+4. FIND TOTAL NUMBER OF ORDERS
+order_count = FOREACH (GROUP orders ALL)
+              GENERATE COUNT(orders) AS total_orders;
+
+DUMP order_count;
+
+5. FIND TOTAL REVENUE
+total_revenue = FOREACH (GROUP orders ALL)
+                GENERATE SUM(orders.order_total) AS revenue;
+
+DUMP total_revenue;
+
+6. GROUP ORDERS BY PRODUCT
+product_group = GROUP orders BY product_id;
+
+7. CALCULATE PRODUCT-WISE REVENUE
+product_revenue = FOREACH product_group
+                  GENERATE group AS product_id,
+                  SUM(orders.order_total) AS revenue;
+
+8. FIND TOP 5 PRODUCTS
+sorted_products = ORDER product_revenue BY revenue DESC;
+
+top5_products = LIMIT sorted_products 5;
+
+DUMP top5_products;
+
+9. GROUP ORDERS BY CUSTOMER
+customer_group = GROUP orders BY customer_id;
+
+10. FIND NUMBER OF ORDERS BY CUSTOMER
+customer_orders = FOREACH customer_group
+                  GENERATE group AS customer_id,
+                  COUNT(orders) AS order_count;
+
+DUMP customer_orders;
+
+11. FIND TOTAL REVENUE BY CUSTOMER
+customer_revenue = FOREACH customer_group
+                   GENERATE group AS customer_id,
+                   SUM(orders.order_total) AS total_revenue;
+
+DUMP customer_revenue;
+
+12. LOAD CUSTOMER DATA
+customers = LOAD 'input/customers.csv'
+            USING PigStorage(',')
+            AS (
+                customer_id:int,
+                customer_name:chararray
+            );
+
+13. JOIN CUSTOMER AND REVENUE DATA
+customer_join = JOIN customer_revenue BY customer_id,
+                customers BY customer_id;
+
+14. DISPLAY JOINED RESULT
+result = FOREACH customer_join
+         GENERATE customers::customer_id,
+                  customers::customer_name,
+                  customer_revenue::total_revenue;
+
+DUMP result;
+
+15. EXIT PIG
+quit;
+
+============================================================
+END OF COMMANDS
+============================================================
