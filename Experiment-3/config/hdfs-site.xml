@@ -6,11 +6,11 @@
 
   <property>
     <name>dfs.namenode.name.dir</name>
-    <value>/home/john/hadoopdata/namenode</value>
+    <value>/home/bda/hadoopdata/namenode</value>
   </property>
 
   <property>
     <name>dfs.datanode.data.dir</name>
-    <value>/home/john/hadoopdata/datanode</value>
+    <value>/home/bda/hadoopdata/datanode</value>
   </property>
 </configuration>
