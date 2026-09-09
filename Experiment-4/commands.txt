@@ -1,0 +1,60 @@
+============================================================
+EXPERIMENT 4 – HADOOP MAPREDUCE WEATHER DATA MINING
+COMMANDS USED
+============================================================
+
+1. CREATE SOURCE DIRECTORY
+mkdir -p src
+
+2. CREATE INPUT DIRECTORY
+mkdir -p input
+
+3. CREATE JAVA FILES
+nano src/WeatherMapper.java
+nano src/WeatherReducer.java
+nano src/WeatherDriver.java
+
+4. CREATE WEATHER INPUT FILE
+nano input/weather.txt
+
+5. CREATE CLASSES DIRECTORY
+mkdir -p classes
+
+6. COMPILE THE JAVA FILES
+javac -classpath $(hadoop classpath) -d classes \
+src/WeatherMapper.java src/WeatherReducer.java src/WeatherDriver.java
+
+7. CREATE JAR FILE
+jar -cvf weather.jar -C classes/ .
+
+8. RUN MAPREDUCE JOB IN LOCAL MODE
+hadoop jar weather.jar WeatherDriver input/weather.txt output
+
+9. VIEW THE OUTPUT
+cat output/part-r-00000
+
+10. VIEW OUTPUT FROM HDFS
+hdfs dfs -cat /user/$USER/output/part-r-00000
+
+11. RUN EXPLICITLY USING LOCAL FILESYSTEM
+hadoop jar weather.jar WeatherDriver \
+file://$(pwd)/input/weather.txt \
+file://$(pwd)/output
+
+12. CREATE HDFS INPUT DIRECTORY
+hdfs dfs -mkdir -p /user/$USER/weather-input
+
+13. COPY INPUT FILE TO HDFS
+hdfs dfs -put input/weather.txt /user/$USER/weather-input
+
+14. RUN MAPREDUCE USING HDFS INPUT
+hadoop jar weather.jar WeatherDriver \
+/user/$USER/weather-input \
+/user/$USER/weather-output
+
+15. VIEW HDFS OUTPUT
+hdfs dfs -cat /user/$USER/weather-output/part-r-00000
+
+============================================================
+END OF COMMANDS
+============================================================
