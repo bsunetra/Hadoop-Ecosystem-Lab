@@ -1,0 +1,73 @@
+Experiment 7: Cassandra DDL & DML Commands
+
+1. Start Cassandra
+cassandra -f
+
+2. Open Cassandra Query Language Shell
+cqlsh
+
+3. Create Keyspace
+CREATE KEYSPACE IF NOT EXISTS CollegeDB
+WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+
+4. Use Keyspace
+USE CollegeDB;
+
+5. Create Table
+CREATE TABLE students (
+    student_id INT PRIMARY KEY,
+    student_name TEXT,
+    department TEXT,
+    year INT,
+    cgpa DOUBLE
+);
+
+6. Alter Table
+ALTER TABLE students ADD email TEXT;
+
+7. Insert Records
+INSERT INTO students
+(student_id, student_name, department, year, cgpa, email)
+VALUES
+(101, 'John', 'CSE', 3, 8.5, 'john@example.com');
+
+INSERT INTO students
+(student_id, student_name, department, year, cgpa, email)
+VALUES
+(102, 'Priya', 'AIDS', 3, 9.1, 'priya@example.com');
+
+INSERT INTO students
+(student_id, student_name, department, year, cgpa, email)
+VALUES
+(103, 'Rahul', 'ECE', 2, 8.2, 'rahul@example.com');
+
+8. Display All Records
+SELECT * FROM students;
+
+9. Select Specific Record
+SELECT * FROM students
+WHERE student_id = 101;
+
+10. Update Record
+UPDATE students
+SET cgpa = 8.8
+WHERE student_id = 101;
+
+11. Delete Record
+DELETE FROM students
+WHERE student_id = 103;
+
+12. Display Remaining Records
+SELECT * FROM students;
+
+13. Truncate Table
+TRUNCATE students;
+
+14. Drop Table
+DROP TABLE students;
+
+15. Drop Keyspace
+DROP KEYSPACE CollegeDB;
+
+16. Exit Cassandra Shell
+exit;
