@@ -1,0 +1,54 @@
+============================================================
+EXPERIMENT 5 – HIVE TABLE AND QUERIES
+COMMANDS USED
+============================================================
+
+1. START HIVE
+hive
+
+2. CREATE THE ORDERS TABLE
+CREATE TABLE orders (
+    order_id INT,
+    customer_id INT,
+    order_date STRING,
+    product_id INT,
+    order_total DOUBLE
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE;
+
+3. LOAD DATA INTO THE TABLE
+LOAD DATA LOCAL INPATH '/path/orders.csv'
+INTO TABLE orders;
+
+4. DISPLAY ALL ORDERS
+SELECT * FROM orders;
+
+5. FIND TOTAL NUMBER OF ORDERS
+SELECT COUNT(*) AS total_orders
+FROM orders;
+
+6. FIND TOTAL REVENUE
+SELECT SUM(order_total) AS total_revenue
+FROM orders;
+
+7. FIND TOP 5 PRODUCTS BY TOTAL REVENUE
+SELECT product_id, SUM(order_total) AS revenue
+FROM orders
+GROUP BY product_id
+ORDER BY revenue DESC
+LIMIT 5;
+
+8. FIND NUMBER OF ORDERS BY CUSTOMER
+SELECT customer_id, COUNT(*) AS order_count
+FROM orders
+GROUP BY customer_id
+ORDER BY customer_id;
+
+9. EXIT HIVE
+QUIT;
+
+============================================================
+END OF COMMANDS
+============================================================
